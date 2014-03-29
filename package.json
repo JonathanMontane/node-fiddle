@@ -24,10 +24,5 @@
   "dependencies": {
     "logfmt": "^1.1.2",
     "express": "^3.5.1"
-  },
-  {
- "engines":{
-    "node":"v0.10.x"
-    }
   }
 }
