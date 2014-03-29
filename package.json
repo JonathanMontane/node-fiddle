@@ -1,0 +1,33 @@
+{
+  "name": "node-fiddle",
+  "version": "0.1.0",
+  "description": "node fiddling",
+  "main": "web.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JonathanMontane/node-fiddle.git"
+  },
+  "keywords": [
+    "nodejs",
+    "heroku",
+    "fiddle"
+  ],
+  "author": "Jonathan Montane",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JonathanMontane/node-fiddle/issues"
+  },
+  "homepage": "https://github.com/JonathanMontane/node-fiddle",
+  "dependencies": {
+    "logfmt": "^1.1.2",
+    "express": "^3.5.1"
+  },
+  {
+ "engines":{
+    "node":"v0.10.x"
+    }
+  }
+}
