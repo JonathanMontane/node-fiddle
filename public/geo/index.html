@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!-- saved from url=(0057)http://mbostock.github.io/d3/talk/20111018/azimuthal.html -->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="/js/d3.min.js"></script>
+    <script type="text/javascript" src="/js/d3.geo.js"></script>
+    <link type="text/css" rel="stylesheet" href="/css/geo.css">
+    <link type="text/css" rel="stylesheet" href="/css/colorbrewer.css">
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
+    <style type="text/css">
+
+svg {
+  pointer-events: all;
+}
+
+circle {
+  fill: #dbe4f0;
+}
+
+path {
+  fill: #aaa;
+  stroke: #fff;
+}
+
+.ellipsized {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width:120px;
+}
+
+.chart div {
+  font: 14px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 6px;
+  margin: 10px;
+  color: white;
+}
+    </style>
+  <style type="text/css"></style></head>
+  <body class="container">
+    <div class="row">
+      <h1 class="text-center">SEM Prices in North America and Europe from 2009-2012</h1>
+    </div>
+    <div class="row">
+      <div id="body" class="col-md-6" style="max-height:600px;">
+      </div>
+      <div class="col-md-6" style="max-height:260px; min-height:260px;">
+        <h3>Filter by Industry</h3>
+        <div class="row">
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">advertising</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">automotive</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">beauty</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">consulting</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">entertainment electronics</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">fashion</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">finance</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">health</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">household eletronics</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">internet services</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">leisure</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">online communities</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">real estate</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">telecommunications</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">travel</div></div></div>
+        </div>
+      </div>
+      <div class="col-md-6" style="max-height:340px;">
+        <h3>CPC in USD per Top Keyword</h3>
+        <div class="chart" style="height:272px"></div>
+      </div>
+    </div>
+    <script type="text/javascript">
+
+var data = [4, 8, 15, 16, 23, 42];
+
+var x = d3.scale.linear()
+    .domain([0, d3.max(data)])
+    .range([0, 420]);
+
+d3.select(".chart")
+  .selectAll("div")
+    .data(data)
+  .enter().append("div")
+    .style("width", function(d) { return x(d) + "px"; })
+    .text(function(d) { return d; });
+
+var feature;
+var viewbox_width = 1280, viewbox_height = 800;
+
+var scale_level = 0;
+
+var projection = d3.geo.azimuthal()
+    .scale(500)
+    .origin([-71.03,42.37])
+    .mode("orthographic")
+    .translate([viewbox_width/2, viewbox_height/2]);
+
+var circle = d3.geo.greatCircle()
+    .origin(projection.origin());
+
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var svg = d3.select("#body").append("svg:svg")
+    .attr("viewBox", "0 0 "+ viewbox_width +" "+ viewbox_height)
+    .attr("preserveAspectRatio","xMidYMid meet")
+    .on("mousedown", mousedown)
+    .on("mouseover", mouseover)
+    .on("mousewheel",zoom);
+    //.call(zoom);
+
+d3.json("/geo/world-countries.json", function(collection) {
+  feature = svg.selectAll("path")
+      .data(collection.features)
+    .enter().append("svg:path")
+      .attr("d", clip)
+      .style("fill",function(){
+        var choice = Math.floor(Math.random()*4);
+        if(choice == 0) return "red";
+        if(choice == 1) return "blue";
+        if(choice == 2) return "green";
+        if(choice == 3) return "orange";
+      });
+
+  feature.append("svg:title")
+      .text(function(d) { return d.properties.name; });
+});
+
+d3.select(window)
+    .on("mousemove", mousemove)
+    .on("mouseup", mouseup);
+
+function zoom(){
+  console.log("zoomed");
+  if(d3.event){
+    if(d3.event.wheelDelta>0){
+      scale_level = scale_level < 6 ? scale_level+1 : 6;
+      console.log(scale_level);
+      projection.scale(500+500*scale_level);
+      refresh(750);
+    } else {
+      scale_level = scale_level > 0 ? scale_level-1 : 0;
+      projection.scale(500+500*scale_level);
+      refresh(750);
+    }
+  }
+}
+
+function mouseover(){
+  if(d3.event) {
+    d3.select(d3.event.fromElement).style("fill","#aaa");
+    d3.select(d3.event.toElement).style("fill", "#ccc");
+  }
+}
+
+var m0,
+    o0;
+
+function mousedown() {
+  m0 = [d3.event.pageX, d3.event.pageY];
+  o0 = projection.origin();
+  d3.event.preventDefault();
+}
+
+function mousemove() {
+  if (m0) {
+    var m1 = [d3.event.pageX, d3.event.pageY],
+        o1 = [o0[0] + (m0[0] - m1[0]) / 8, o0[1] + (m1[1] - m0[1]) / 8];
+    projection.origin(o1);
+    circle.origin(o1)
+    refresh();
+  }
+}
+
+function mouseup() {
+  if (m0) {
+    mousemove();
+    m0 = null;
+  }
+}
+
+function refresh(duration) {
+  (duration ? feature.transition().duration(duration) : feature).attr("d", clip);
+}
+
+function clip(d) {
+  return path(circle.clip(d));
+}
+
+    </script>
+  
+
+</body></html>
