@@ -4,7 +4,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link type="text/css" rel="stylesheet" href="/css/geo.css">
+    <link type="text/css" rel="stylesheet" href="/css/step1.css">
     <link type="text/css" rel="stylesheet" href="/css/colorbrewer.css">
     <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
     <style type="text/css">
@@ -37,20 +37,22 @@ path {
   margin: 10px;
   color: white;
 }
-    </style>
+
+
+  </style>
   <style type="text/css"></style></head>
   <body class="container">
     <div class="row">
       <h1 class="text-center">SEM Prices in North America and Europe from 2009-2012</h1>
     </div>
     <div class="row">
-      <div id="body" class="col-md-6" style="max-height:600px;">
+      <div id="map" class="col-md-6" style="max-height:600px;">
       </div>
       <div class="col-md-6" style="max-height:260px; min-height:260px;">
         <h3>Filter by Industry</h3>
         <div class="row">
-          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">advertising</div></div></div>
-          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">automotive</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="radio"/></div><div class="form-control ellipsized">advertising</div></div></div>
+          <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="radio"/></div><div class="form-control ellipsized">automotive</div></div></div>
           <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">beauty</div></div></div>
           <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">consulting</div></div></div>
           <div class="col-md-4"><div class="input-group"><div class="input-group-addon"><input type="checkbox"/></div><div class="form-control ellipsized">entertainment electronics</div></div></div>
@@ -72,21 +74,9 @@ path {
       </div>
     </div>
     <script type="text/javascript" src="/js/d3.min.js"></script>
+    <script type="text/javascript" src="/step1/topojson.v1.min.js"></script>
     <script type="text/javascript" src="/js/d3.geo.js"></script>
     <script type="text/javascript">
-
-var storage = (function(){
-  var _rows = undefined;
-  this.rows = function(data){
-    if(arguments.length){
-      _rows = data;
-      return this;
-    } else {
-      return _rows;
-    }
-  }
-  return this;
-})();
 
 var data = [4, 8, 15, 16, 23, 42];
 
@@ -104,32 +94,21 @@ d3.select(".chart")
 var feature;
 var viewbox_width = 1280, viewbox_height = 800;
 
-var scale_level = 0;
-
-var projection = d3.geo.azimuthal()
-    .scale(500)
-    .origin([-71.03,42.37])
-    .mode("orthographic")
-    .translate([viewbox_width/2, viewbox_height/2]);
-
-var circle = d3.geo.greatCircle()
-    .origin(projection.origin());
+var projection = d3.geo.mercator()
+    .scale(10000)
+    .translate([400,2000]);
 
 
 var path = d3.geo.path()
     .projection(projection);
 
-var svg = d3.select("#body").append("svg:svg")
+var svg = d3.select("#map").append("svg:svg")
     .attr("viewBox", "0 0 "+ viewbox_width +" "+ viewbox_height)
     .attr("preserveAspectRatio","xMidYMid meet")
-    .on("mousedown", mousedown)
-    .on("mouseover", mouseover)
-    .on("mousewheel",zoom);
-    //.call(zoom);
+    //.on("mousedown", mousedown)
+    .on("mouseover", mouseover);
+    //.on("mousewheel",zoom);
 
-d3.csv("/step1/base_data.csv", function(rows){
-  console.log(rows);
-});
 
 d3.json("/step1/world-countries.json", function(collection) {
   feature = svg.selectAll("path")
@@ -148,26 +127,6 @@ d3.json("/step1/world-countries.json", function(collection) {
       .text(function(d) { return d.properties.name; });
 });
 
-d3.select(window)
-    .on("mousemove", mousemove)
-    .on("mouseup", mouseup);
-
-function zoom(){
-  console.log("zoomed");
-  if(d3.event){
-    if(d3.event.wheelDelta>0){
-      scale_level = scale_level < 6 ? scale_level+1 : 6;
-      console.log(scale_level);
-      projection.scale(500+500*scale_level);
-      refresh(750);
-    } else {
-      scale_level = scale_level > 0 ? scale_level-1 : 0;
-      projection.scale(500+500*scale_level);
-      refresh(750);
-    }
-  }
-}
-
 function mouseover(){
   if(d3.event) {
     d3.select(d3.event.fromElement).style("fill","#aaa");
@@ -175,38 +134,8 @@ function mouseover(){
   }
 }
 
-var m0,
-    o0;
-
-function mousedown() {
-  m0 = [d3.event.pageX, d3.event.pageY];
-  o0 = projection.origin();
-  d3.event.preventDefault();
-}
-
-function mousemove() {
-  if (m0) {
-    var m1 = [d3.event.pageX, d3.event.pageY],
-        o1 = [o0[0] + (m0[0] - m1[0]) / 8, o0[1] + (m1[1] - m0[1]) / 8];
-    projection.origin(o1);
-    circle.origin(o1)
-    refresh();
-  }
-}
-
-function mouseup() {
-  if (m0) {
-    mousemove();
-    m0 = null;
-  }
-}
-
-function refresh(duration) {
-  (duration ? feature.transition().duration(duration) : feature).attr("d", clip);
-}
-
 function clip(d) {
-  return path(circle.clip(d));
+  return path(d);
 }
 
     </script>
