@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!-- saved from url=(0057)http://mbostock.github.io/d3/talk/20111018/azimuthal.html -->
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link type="text/css" rel="stylesheet" href="/css/step1.css">
+    <link type="text/css" rel="stylesheet" href="/css/colorbrewer.css">
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
+    <style type="text/css">
+
+svg {
+  pointer-events: all;
+}
+
+circle {
+  fill: #dbe4f0;
+}
+
+path {
+  fill: #aaa;
+  stroke: #fff;
+}
+
+.ellipsized {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width:120px;
+}
+
+.chart div {
+  font: 14px sans-serif;
+  background-color: #4c5575;
+  text-align: right;
+  padding: 6px;
+  margin: 10px;
+  color: white;
+}
+
+
+  </style>
+  <style type="text/css"></style></head>
+  <body class="container">
+    <div class="row">
+      <h1 class="text-center">SEM Prices in North America and Europe from 2009-2012</h1>
+    </div>
+    <div class="row">
+      <div id="map" class="col-md-6" style="max-height:600px;">
+      </div>
+      <div class="col-md-6" style="max-height:260px; min-height:260px;">
+        <h3>Filter by Industry</h3>
+        <div id="filter" class="row">
+        </div>
+      </div>
+      <div class="col-md-6" style="max-height:340px;">
+        <h3>CPC in USD per Top Keyword</h3>
+        <div class="chart" style="height:272px"></div>
+      </div>
+    </div>
+    <script type="text/javascript" src="/js/d3.min.js"></script>
+    <script type="text/javascript" src="/js/d3.geo.js"></script>
+    <script type="text/javascript">
+
+var storage = function(){
+  var _rows = [];
+  var _updateCallback = function(){};
+  this.rows = function(d){
+    if(arguments.length){
+      _rows = d;
+      _updateCallback(_rows);
+      return this;
+    } else {
+      return _rows;
+    }
+  }
+  this.on = function(keyword, callback){
+    if(keyword === "update") {
+      _updateCallback = callback;
+      return this;
+    }
+  }
+};
+
+var countrystore = new storage(),
+    datastore = new storage();
+
+var data = [4, 8, 15, 16, 23, 42];
+
+var x = d3.scale.linear()
+    .domain([0, d3.max(data)])
+    .range([0, 420]);
+
+d3.select(".chart")
+  .selectAll("div")
+    .data(data)
+  .enter().append("div")
+    .style("width", function(d) { return x(d) + "px"; })
+    .text(function(d) { return d; });
+
+var feature;
+var viewbox_width = 1280, viewbox_height = 800;
+
+var projection = d3.geo.mercator()
+    .scale(10000)
+    .translate([400,2000]);
+
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var svg = d3.select("#map").append("svg:svg")
+    .attr("viewBox", "0 0 "+ viewbox_width +" "+ viewbox_height)
+    .attr("preserveAspectRatio","xMidYMid meet")
+    //.on("mousedown", mousedown)
+    .on("mouseover", mouseover);
+    //.on("mousewheel",zoom);
+
+datastore.on("update", function(d){return console.log("updated!", d);});
+countrystore.on("update", function(d){return console.log("updated!", d);});
+
+d3.csv("/step2/base_data.csv", function(rows){
+  datastore.rows(rows);
+  var industries = {}
+  datastore.rows().forEach(function(d){
+    industries[d["industry"]] = undefined;
+  });
+  console.log(d3.keys(industries));
+
+  var filter = d3.select("#filter");
+  filter.selectAll("div")
+    .data(d3.keys(industries))
+    .enter().append("html:div")
+      .html(function(d){
+        console.log(d);
+        return "<div class='col-md-4'><div class='input-group'><div class='input-group-addon'><input type='radio' name='industry'/></div><div class='form-control ellipsized'>"+d+"</div></div></div>";
+      });
+
+  d3.json("/step2/world-countries.json", function(collection) {
+    countrystore.rows(collection);
+    feature = svg.selectAll("path")
+        .data(countrystore.rows().features)
+      .enter().append("svg:path")
+        .attr("d", clip)
+        .style("fill",function(){
+          var choice = Math.floor(Math.random()*4);
+          if(choice == 0) return "a12444";
+          if(choice == 1) return "4c5575";
+          if(choice == 2) return "e1a48c";
+          if(choice == 3) return "f1a754";
+        });
+
+    feature.append("svg:title")
+        .text(function(d) { return d.properties.name; });
+
+    svg.selectAll("circle")
+      .data(countrystore.rows().features)
+        .enter().append("svg:circle")
+          .attr("transform", function(d){
+            if(d.id === "FRA") return "translate(470,520)"; //forced centroid (bc Guyane and stuff)
+            return "translate("+path.centroid(d)+")";
+          })
+          .attr("r", 10)
+          .style("fill","f00");
+  });
+});
+
+
+function mouseover(){
+  if(d3.event) {
+    d3.select(d3.event.fromElement).style("fill","#aaa");
+    d3.select(d3.event.toElement).style("fill", "#ccc");
+  }
+}
+
+function clip(d) {
+  return path(d);
+}
+
+    </script>
+  
+
+</body></html>
