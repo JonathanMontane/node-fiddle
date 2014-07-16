@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link type="text/css" rel="stylesheet" href="/css/step5.css">
+    <link type="text/css" rel="stylesheet" href="/css/colorbrewer.css">
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
+  </head>
+  <body class="container">
+    <div class="row">
+      <h1 class="text-center">SEM Prices in North America and Europe from 2009-2012</h1>
+    </div>
+    <div class="row well breathing-top-small">
+      <h3>Filters</h3>
+      <div class="row breathing-top-small">
+        <form role="form">
+          <div class="col-xs-6 form-group">
+            <label for="base-filter">Select a way to filter</label>
+            <select id="base-filter" name="base-filter" class="form-control">
+            </select>
+          </div>
+          <div class="col-xs-6">
+            <label for="granular-filter">Select only</label>
+            <select id="granular-filter" name="granular-filter" class="form-control">
+            </select>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Searches Per Country (Europe)</h3>
+        <div id="map"></div>
+      </div>
+      <div class="col-md-6">
+        <h3>CPC in USD per Top Keyword</h3>
+        <div id="chart" class="well"></div>
+      </div>
+    </div>
+    <script type="text/javascript" src="/js/d3.min.js"></script>
+    <script type="text/javascript" src="/js/d3.geo.js"></script>
+    <script type="text/javascript" src="/js/step5.js"></script>
+</body></html>
