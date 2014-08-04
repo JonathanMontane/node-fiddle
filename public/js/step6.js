@@ -205,8 +205,11 @@ var base = d3.select("#map").append("svg:svg")
     .attr("viewBox", "0 0 "+ viewbox_width +" "+ viewbox_height)
     .attr("preserveAspectRatio","xMidYMid meet")
 
+
+var svg = base.append('g');
+
 var legend = base.append('g')
-  .attr('transform', "translate(100,-50)");
+  .attr('transform', "translate(1000,700)");
 
 legend.append('circle')
       .classed({'legend':true})
@@ -233,9 +236,6 @@ legend.append('text')
       .attr('font-size', 30)
       .attr('transform', "translate(15,69)")
       .text('1M');
-
-var svg = base.append('g');
-
 
 
 function clip(d) {
