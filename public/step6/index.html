@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>SEM Prices in Europe from 2009-2012</title>
+    <link type="text/css" rel="stylesheet" href="/css/step6.css">
+    <link type="text/css" rel="stylesheet" href="/css/colorbrewer.css">
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
+  </head>
+  <body class="container">
+    <div id="fb-root"></div>
+    <div class="row">
+      <h1 class="text-center">SEM Prices in Europe from 2009-2012</h1>
+    </div>
+    <div class="row well breathing-top-small">
+      <div class="col-sm-6">
+        <h3>Filters</h3>
+        <div class="row breathing-top-small">
+          <form role="form">
+            <div class="form-group">
+              <label for="granular-filter">Select only</label>
+              <select id="granular-filter" name="granular-filter" class="form-control">
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="col-sm-6 form-group">
+        <label>Select period</label>
+        <div id='time'>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Searches Per Country (Europe)
+        <button id="rst_country" class="btn btn-default pull-right">reset country</button>
+        </h3>
+        <div id="map"></div>
+      </div>
+      <div class="col-md-6">
+        <h3>CPC in Euros per Top Keyword</h3>
+        <div id="chart" class="well"></div>
+      </div>
+    </div>
+    <footer class="footer breathing-top-small">
+      <div class="container">
+        <p class="text-muted text-center">based on the data from the paper "Empirical Generalizations in Search Engine Advertising" written by Nadia Abou Nabout, Markus Lilienthal, and Bernd Skiera</p>
+      </div>
+    </footer>
+    <script type="text/javascript" src="/js/d3.min.js"></script>
+    <script type="text/javascript" src="/js/d3.geo.js"></script>
+    <script type="text/javascript" src="/js/step6.js"></script>
+</body></html>

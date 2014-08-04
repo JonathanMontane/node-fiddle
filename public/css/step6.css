@@ -1,0 +1,95 @@
+body {
+  background: url(/geo/texture-noise.png);
+}
+
+svg {
+  pointer-events: all;
+}
+
+circle {
+  fill: #4c5575;
+}
+circle:hover {
+  fill: #8cb0ea;
+}
+
+path {
+  fill: #aaa;
+  stroke: #fff;
+}
+
+.area {
+  fill: #4c5575;
+  clip-path: url(#clip);
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+/* This gets Google to fall into place */
+.social {
+	font-size: 1px;
+}
+
+/* This gets Facebook to fall into place */
+.social iframe {
+	vertical-align: middle;
+}
+
+/* Set an optional width for your button wrappers */
+.social span {
+	display: inline-block;
+	width: 110px;
+}
+
+/* Adjust the widths individually if you like */
+.social .google {
+	width: 75px;
+}
+
+.focused{
+  fill: #8cb0ea;
+}
+
+.ellipsized {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width:120px;
+}
+
+#map{
+  max-width:100%;
+  max-height:500px;
+}
+
+#chart div {
+  font: 14px sans-serif;
+  background-color: #4c5575;
+  text-align: right;
+  padding: 6px;
+  margin: 10px;
+  color: white;
+}
+
+.legend{
+  stroke-width:1;
+  stroke:#000;
+  stroke-dasharray: 4 4;
+  fill:none; 
+}
+
+.breathing-top-small{
+  margin-top:20px;
+}
+
