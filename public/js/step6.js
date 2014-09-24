@@ -46,7 +46,9 @@ time_svg.append("defs").append("clipPath")
 
 var time_x = d3.time.scale().range([0, 560]), time_x2 = d3.time.scale();
 var parseDate = d3.time.format("%m/%y").parse;
-var time_xAxis = d3.svg.axis().scale(time_x).orient("bottom");
+var time_xAxis = d3.svg.axis()
+                   .scale(time_x).orient("bottom")
+                   .ticks(d3.time.months, 6);
 
 var brush = d3.svg.brush()
     .x(time_x)
@@ -65,7 +67,6 @@ var area = d3.svg.area()
     .y1(100);
 
 function brushed() {
-  console.log('in brush', brush.extent());
   min_time_f = brush.extent()[0];
   max_time_f = brush.extent()[1];
   update_views(base_f, granular_f, country_f, datastore.rows(), true);
@@ -95,21 +96,8 @@ function update_time_filter(data){
 
 function update_base_filters(data){
   base_filters = d3.keys(data[0]);
-  /*d3.select("#base-filter")
-    .selectAll('option')
-      .data(base_filters)
-    .enter().append('option')
-      .attr('value', function(d){return d;})
-      .text(function(d){return d;});
-  */
   base_f = base_filters[0];
   update_granular_filter(datastore.rows(), base_f);
-  /*
-  d3.select("#base-filter").on('change', function(){
-    base_f = this.options[this.selectedIndex].value;
-    update_granular_filter(datastore.rows(), base_f);
-  });
-  */
 }
 
 function update_granular_filter(data, base_filter){
@@ -161,7 +149,6 @@ function update_views(base_f, granular_f, country_f, data, propagate){
 
   var _keyword_pairs = calculate_cpc(keywords_data);  
   if(_keyword_pairs.length != 0){
-    console.log("keyword_pairs", keywords_data, _keyword_pairs);
     _keyword_pairs = _keyword_pairs.sort(function(a,b){return d3.descending(a[1], b[1])}).slice(0,5);
     barchart_view = _keyword_pairs;
   }
@@ -330,17 +317,16 @@ function create_barchart(data){
       .data(data)
     .enter().append("div")
       .style("width", function(d) { return x(d[1]) + "px"; })
-      .text(function(d) { return d[0]+" : "+parseInt(d[1]*100)/100 + "€"; });
+      .text(function(d) { return d[0]+": "+parseInt(d[1]*100)/100 + "€"; });
 
 }
 
 function update_barchart(data){
-   console.log(data[0]);
    x.domain([0, data[0][1]]);
    chart.data(data)
      .transition(750)
       .style("width", function(d) { return x(d[1]) + "px"; })
-      .text(function(d) { return d[0]+" : "+parseInt(d[1]*100)/100 + "€"; });
+      .text(function(d) { return d[0]+": "+parseInt(d[1]*100)/100 + "€"; });
 }
 
 
